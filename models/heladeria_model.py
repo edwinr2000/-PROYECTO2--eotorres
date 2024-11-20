@@ -34,16 +34,12 @@ def vender_producto(producto_id):
     if not producto:
         raise ValueError("Producto no encontrado.")
     
-    ingredientes = [
-        producto.ingrediente_1_id,
-        producto.ingrediente_2_id,
-        producto.ingrediente_3_id,
-    ]
-    for ingrediente_id in ingredientes:
-        ingrediente = Ingrediente.query.get(ingrediente_id)
-        if ingrediente.cantidad <= 0:
-            raise ValueError(f"Falta {ingrediente.nombre} para preparar el producto.")
-        ingrediente.cantidad -= 1
-    
+    ingredientes_ids = [producto.ingrediente_1_id, producto.ingrediente_2_id, producto.ingrediente_3_id]
+    for ingrediente_id in ingredientes_ids:
+        if ingrediente_id:  # Verificar que el ingrediente no sea NULL
+            ingrediente = Ingrediente.query.get(ingrediente_id)
+            if not ingrediente or ingrediente.cantidad <= 0:
+                raise ValueError(f"{ingrediente.nombre if ingrediente else 'Ingrediente desconocido'} no está disponible para vender.")
+            ingrediente.cantidad -= 1  # Reducir cantidad
     db.session.commit()
     return "¡Vendido!"
